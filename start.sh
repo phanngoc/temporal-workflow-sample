@@ -21,19 +21,22 @@ fi
 echo "1. Khởi động PostgreSQL và Temporal server..."
 docker-compose up -d
 
-echo "2. Chờ các services khởi động hoàn tất..."
+echo "2. Khởi động Temporal Dev Server..."
+temporal server start-dev
+
+echo "3. Chờ các services khởi động hoàn tất..."
 sleep 10
 
-echo "3. Cài đặt các gói phụ thuộc Python..."
+echo "4. Cài đặt các gói phụ thuộc Python..."
 pip install -r requirements.txt
 
-echo "4. Khởi động worker (trong terminal riêng)..."
+echo "5. Khởi động worker (trong terminal riêng)..."
 # Khởi động worker trong một terminal riêng
 gnome-terminal -- bash -c "python -m app.workers.worker; exec bash" || \
     xterm -e "python -m app.workers.worker; exec bash" || \
     echo "Không thể mở terminal mới. Vui lòng khởi động worker thủ công: python -m app.workers.worker"
 
-echo "5. Khởi động ứng dụng FastAPI..."
+echo "6. Khởi động ứng dụng FastAPI..."
 uvicorn app.main:app --reload
 
 # Lưu ý: Script không kết thúc ở đây vì uvicorn sẽ chạy liên tục 

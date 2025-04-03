@@ -203,4 +203,4 @@ class OrderWorkflow:
             print(f"Order {order_id} confirmation failed but order is still completed")
         
         # Order completed successfully
-        return {"success": True} 
+        return {"success": True}

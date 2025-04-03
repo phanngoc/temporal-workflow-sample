@@ -1,7 +1,8 @@
-from sqlalchemy import Column, Integer, String, Float, Boolean, Enum, ForeignKey
+from sqlalchemy import Column, Integer, String, Float, Boolean, Enum, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 from app.db.database import Base
 import enum
+import datetime
 
 class OrderStatus(str, enum.Enum):
     RECEIVED = "received"
@@ -33,6 +34,3 @@ class Order(Base):
     
     user = relationship("User", back_populates="orders")
 
-# Thêm relationship ngược lại cho User
-from app.models.user import User
-User.orders = relationship("Order", back_populates="user") 

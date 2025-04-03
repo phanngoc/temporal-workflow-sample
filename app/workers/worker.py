@@ -2,7 +2,21 @@ import asyncio
 from temporalio.client import Client
 from temporalio.worker import Worker
 from app.workflows.auth_workflow import AuthWorkflow, register_user, authenticate_user
-from app.workflows.order_workflow import OrderWorkflow, validate_order, process_payment, ship_order, send_confirmation
+from app.workflows.order_workflow import (
+    OrderWorkflow,
+    validate_order, 
+    process_payment, 
+    ship_order, 
+    send_confirmation
+)
+from app.workflows.product_workflow import (
+    ProductCreateWorkflow,
+    ProductStockUpdateWorkflow,
+    ProductInventoryCheckWorkflow,
+    create_product,
+    update_product_stock,
+    check_low_stock_products
+)
 from app.db.database import SessionLocal
 from dotenv import load_dotenv
 import os
@@ -17,7 +31,13 @@ async def main():
     worker = Worker(
         client,
         task_queue="workflow-queue",
-        workflows=[AuthWorkflow, OrderWorkflow],
+        workflows=[
+            AuthWorkflow, 
+            OrderWorkflow, 
+            ProductCreateWorkflow,
+            ProductStockUpdateWorkflow,
+            ProductInventoryCheckWorkflow
+        ],
         activities=[
             # Auth workflow activities
             register_user, 
@@ -26,7 +46,11 @@ async def main():
             validate_order,
             process_payment,
             ship_order,
-            send_confirmation
+            send_confirmation,
+            # Product management activities
+            create_product,
+            update_product_stock,
+            check_low_stock_products
         ]
     )
     
