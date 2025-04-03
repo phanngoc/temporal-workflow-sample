@@ -39,7 +39,7 @@ async def create_order(order: OrderCreate, db: Session = Depends(get_db), user_i
         # Ghi chú: Workflow được thực thi không đồng bộ
         await client.start_workflow(
             OrderWorkflow.run,
-            args=[db, db_order.id],
+            args=[db_order.id],
             id=f"order-workflow-{db_order.id}-{uuid4()}",
             task_queue="workflow-queue"
         )

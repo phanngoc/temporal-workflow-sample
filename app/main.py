@@ -1,11 +1,11 @@
 from fastapi import FastAPI
 from app.api import auth, order
 from app.db.database import engine
-from app.models import user, order
+from app.models import user, order as order_model
 
 # Create database tables
 user.Base.metadata.create_all(bind=engine)
-order.Base.metadata.create_all(bind=engine)
+order_model.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Temporal API")
 

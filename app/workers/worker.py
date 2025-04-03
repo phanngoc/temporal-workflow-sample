@@ -7,7 +7,8 @@ from app.db.database import SessionLocal
 from dotenv import load_dotenv
 import os
 
-load_dotenv()
+load_dotenv('../.env')
+print('TEMPORAL_SERVER_URL', os.getenv("TEMPORAL_SERVER_URL"))
 
 async def main():
     client = await Client.connect(os.getenv("TEMPORAL_SERVER_URL"))

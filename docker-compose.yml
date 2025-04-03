@@ -1,19 +1,10 @@
-version: '3.8'
+version: '3.3'
 
 services:
-  postgres:
-    image: postgres:13
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: temporal_auth
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
   temporal:
+    container_name: temporal
     image: temporalio/auto-setup:1.22.3
+    user: root
     ports:
       - "7233:7233"
       - "7234:7234"
@@ -21,13 +12,36 @@ services:
     environment:
       - DYNAMIC_CONFIG_FILE_PATH=config/dynamicconfig/development.yaml
       - ENABLE_ES=false
-      - DB=postgresql
+      - POSTGRES_USER=temporal
+      - POSTGRES_PWD=temporal
+      - POSTGRES_SEEDS=postgresql
+      - POSTGRES_PASSWORD=temporal
       - DBNAME=temporal
-      - POSTGRES_USER=postgres
-      - POSTGRES_PWD=postgres
-      - POSTGRES_SEEDS=postgres
+      - POSTGRES_PORT=5432
+      - DB=postgresql
+      - POSTGRES_HOST=postgresql
+      - SERVICES=history,matching,frontend,worker
     depends_on:
-      - postgres
+      - postgresql
+    restart: on-failure
+    command: ["bash", "-c", "while ! pg_isready -h postgresql -p 5432 -U temporal; do sleep 1; done; temporal-server start-dev"]
+
+  postgresql:
+    container_name: temporal-postgresql
+    image: postgres:13
+    ports:
+      - "5436:5432"
+    environment:
+      - POSTGRES_USER=temporal
+      - POSTGRES_PASSWORD=temporal
+      - POSTGRES_DB=temporal
+    volumes:
+      - postgresql-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U temporal"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 volumes:
-  postgres_data: 
+  postgresql-data: 
